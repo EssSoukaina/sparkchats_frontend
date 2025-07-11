@@ -54,7 +54,8 @@
     "react-turnstile": "^1.1.4",
     "tailwind-react-native-classnames": "^1.5.1",
     "tailwindcss-react-native": "^1.7.10",
-    "yup": "^1.6.1"
+    "yup": "^1.6.1",
+    "expo-linear-gradient": "~14.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

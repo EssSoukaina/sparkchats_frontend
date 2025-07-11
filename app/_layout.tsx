@@ -1,32 +1,31 @@
-// 5. UPDATE: app/_layout.tsx (modify your existing file)
+// app/_layout.tsx
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
-import { Slot, useRouter, useSegments, SplashScreen } from "expo-router";
+import { Slot, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { View, Image } from "react-native";
+import { StatusBar } from "expo-status-bar";
 
 const CLERK_PUBLISHABLE_KEY =
   "pk_test_cHJvdmVuLXNhaWxmaXNoLTE1LmNsZXJrLmFjY291bnRzLmRldiQ";
 
 // Custom splash screen component
-const AppSplashScreen = () => {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#fff",
-      }}
-    >
-      <Image
-        source={require("../assets/images/icon.jpg")}
-        style={{ width: "20%", aspectRatio: 1 }}
-        resizeMode="contain"
-      />
-    </View>
-  );
-};
+const AppSplashScreen = () => (
+  <View
+    style={{
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#fff",
+    }}
+  >
+    <Image
+      source={require("../assets/images/icon.jpg")}
+      style={{ width: "20%", aspectRatio: 1 }}
+      resizeMode="contain"
+    />
+  </View>
+);
 
 const InitialLayout = () => {
   const { isLoaded, isSignedIn } = useAuth();
@@ -34,66 +33,83 @@ const InitialLayout = () => {
   const router = useRouter();
   const [showSplash, setShowSplash] = useState(true);
 
+  // Show splash screen for 3 seconds
   useEffect(() => {
-    // Hide splash after 3 seconds (reduced from 5)
-    const splashTimer = setTimeout(() => {
-      setShowSplash(false);
-    }, 3000);
-
+    const splashTimer = setTimeout(() => setShowSplash(false), 3000);
     return () => clearTimeout(splashTimer);
   }, []);
 
+  // Handle redirect logic based on auth state and route
   useEffect(() => {
     if (!isLoaded || showSplash) return;
 
-    const inAuthGroup = segments[0] === "(auth)";
-    const inTabsGroup = segments[0] === "(tabs)";
+    const currentGroup = String(segments[0]);
+    const inAuthGroup = currentGroup === "(auth)";
 
-    if (isSignedIn && !inTabsGroup && !inAuthGroup) {
-      // User is signed in, redirect to main app
-      router.replace("/(auth)/ImportContacts");
-    } else if (!isSignedIn && inTabsGroup) {
-      // User is not signed in but trying to access main app
-      router.replace("/(auth)/login");
-    } else if (!isSignedIn && !inAuthGroup) {
-      // User is not signed in, redirect to login
-      router.replace("/(auth)/login");
+    // All protected route groups that require authentication
+    const protectedGroups = [
+      "(tabs)",
+      "(settings)",
+      "(onboarding)",
+      "(testaicampaign)",
+      "(chats)",
+    ];
+
+    // Public route groups that don't require authentication
+    const publicGroups = ["(auth)"];
+
+    if (isSignedIn) {
+      // User is signed in
+      if (inAuthGroup) {
+        // Redirect authenticated users away from auth pages
+        router.replace("/(tabs)/home");
+      }
+      // If user is in a protected group or unknown route, allow access
+      // The individual route groups will handle their own navigation
+    } else {
+      // User is not signed in
+      if (
+        protectedGroups.includes(currentGroup) ||
+        (!inAuthGroup && !publicGroups.includes(currentGroup))
+      ) {
+        // Redirect unauthenticated users to login
+        router.replace("/(auth)/login");
+      }
     }
-  }, [isSignedIn, isLoaded, showSplash, segments]);
+  }, [isLoaded, isSignedIn, showSplash, segments]);
 
-  if (showSplash) {
-    return <AppSplashScreen />;
-  }
+  if (showSplash) return <AppSplashScreen />;
 
-  return <Slot />;
+  return (
+    <>
+      <StatusBar style="auto" />
+      <Slot />
+    </>
+  );
 };
 
+// Secure token caching using SecureStore
 const tokenCache = {
   async getToken(key: string) {
     try {
-      return SecureStore.getItemAsync(key);
-    } catch (err) {
+      return await SecureStore.getItemAsync(key);
+    } catch {
       return null;
     }
   },
   async saveToken(key: string, value: string) {
     try {
-      return SecureStore.setItemAsync(key, value);
-    } catch (err) {
-      return;
+      await SecureStore.setItemAsync(key, value);
+    } catch {
+      // Do nothing
     }
   },
 };
 
-const RootLayout = () => {
-  return (
-    <ClerkProvider
-      publishableKey={CLERK_PUBLISHABLE_KEY}
-      tokenCache={tokenCache}
-    >
-      <InitialLayout />
-    </ClerkProvider>
-  );
-};
+const RootLayout = () => (
+  <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
+    <InitialLayout />
+  </ClerkProvider>
+);
 
 export default RootLayout;

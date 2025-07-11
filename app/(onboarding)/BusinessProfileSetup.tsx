@@ -47,7 +47,7 @@ const BusinessProfileSetup = () => {
 
   const handleSaveAndContinue = () => {
     console.log("Save and continue");
-    router.push("../aicampaign/ImportContacts"); // Update the route as needed
+    router.push("/(testaicompaign)/ImportContacts"); // Update the route as needed
   };
 
   const handleCategorySelect = (category: { label?: string; value: any }) => {

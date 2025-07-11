@@ -50,7 +50,7 @@ export default function ImportContactsScreen() {
       {/* Avatar Grid */}
       <View style={styles.avatarContainer}>
         <Image
-          source={require("../../../assets/images/avatars-grid.png")} // Make sure this image exists
+          source={require("../../assets/images/avatars-grid.png")} // Make sure this image exists
           style={styles.avatarGrid}
           resizeMode="contain"
         />

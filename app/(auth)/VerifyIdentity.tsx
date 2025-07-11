@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   Image,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useSignIn } from "@clerk/clerk-expo";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -26,6 +28,12 @@ const VerifyIdentityScreen = () => {
 
   const email = (params.email as string) || "your email";
 
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+  }, []);
+
   const handleVerify = async () => {
     if (!signIn) return;
 
@@ -33,20 +41,16 @@ const VerifyIdentityScreen = () => {
       setLoading(true);
       setError("");
 
-      // Attempt to verify the reset password code
       const result = await signIn.attemptFirstFactor({
         strategy: "reset_password_email_code",
         code,
       });
-
-      console.log("Verification result:", result);
 
       Alert.alert(
         "Verification Successful",
         "Your identity has been verified. You can now set a new password."
       );
 
-      // Navigate to Set New Password screen
       router.push({
         pathname: "/(auth)/SetNewPassword",
         params: { email },
@@ -64,8 +68,6 @@ const VerifyIdentityScreen = () => {
 
     try {
       setResendLoading(true);
-
-      // Restart the password reset flow to resend code
       await signIn.create({
         identifier: email,
         strategy: "reset_password_email_code",
@@ -87,6 +89,7 @@ const VerifyIdentityScreen = () => {
   };
 
   const focusInput = () => {
+    console.log("pressed");
     inputRef.current?.focus();
   };
 
@@ -105,11 +108,19 @@ const VerifyIdentityScreen = () => {
     );
   };
 
+  const handleCodeChange = (text: string) => {
+    const numericText = text.replace(/[^0-9]/g, "").substring(0, 6);
+    setCode(numericText);
+    setError("");
+  };
+
   return (
-    <View style={styles.container}>
-      {/* Email with checkmark icon - matches your design */}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
       <Image
-        source={require("../../assets/images/email-check.png")} // You'll need this icon
+        source={require("../../assets/images/email-check.png")}
         style={styles.emailIllustration}
         resizeMode="contain"
       />
@@ -127,49 +138,58 @@ const VerifyIdentityScreen = () => {
         Enter the 6-digit code below to proceed.
       </Text>
 
-      {/* Verification Code Input */}
-      <View style={styles.codeInputContainer}>
-        {[0, 1, 2].map((index) => (
-          <TouchableOpacity
-            key={`first-${index}`}
-            style={styles.codeBox}
-            onPress={focusInput}
-            activeOpacity={1}
-          >
-            <Text style={styles.codeDigit}>{code[index] || ""}</Text>
-          </TouchableOpacity>
-        ))}
+      <TouchableOpacity
+        style={styles.codeInputWrapper}
+        onPress={focusInput}
+        activeOpacity={1}
+      >
+        <View style={styles.codeInputContainer}>
+          {[0, 1, 2].map((index) => (
+            <View
+              key={`first-${index}`}
+              style={[
+                styles.codeBox,
+                code[index] ? styles.codeBoxFilled : null,
+              ]}
+            >
+              <Text style={styles.codeDigit}>{code[index] || ""}</Text>
+            </View>
+          ))}
 
-        <View style={styles.dashContainer}>
-          <MaterialIcons name="horizontal-rule" size={10} color="#AAAAAA" />
+          <View style={styles.dashContainer}>
+            <MaterialIcons name="horizontal-rule" size={10} color="#AAAAAA" />
+          </View>
+
+          {[3, 4, 5].map((index) => (
+            <View
+              key={`second-${index}`}
+              style={[
+                styles.codeBox,
+                code[index] ? styles.codeBoxFilled : null,
+              ]}
+            >
+              <Text style={styles.codeDigit}>{code[index] || ""}</Text>
+            </View>
+          ))}
         </View>
-
-        {[3, 4, 5].map((index) => (
-          <TouchableOpacity
-            key={`second-${index}`}
-            style={styles.codeBox}
-            onPress={focusInput}
-            activeOpacity={1}
-          >
-            <Text style={styles.codeDigit}>{code[index] || ""}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      </TouchableOpacity>
 
       <TextInput
         ref={inputRef}
         value={code}
-        onChangeText={(text) => {
-          setCode(text.replace(/[^0-9]/g, "").substring(0, 6));
-          setError("");
-        }}
+        onChangeText={handleCodeChange}
         style={styles.hiddenInput}
         keyboardType="number-pad"
         maxLength={6}
-        autoFocus
+        caretHidden={true}
+        contextMenuHidden={true}
+        selectTextOnFocus={false}
+        autoComplete="sms-otp"
+        textContentType="oneTimeCode"
+        editable={true}
+        importantForAccessibility="yes"
       />
 
-      {/* Error message */}
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
       <TouchableOpacity
@@ -205,7 +225,7 @@ const VerifyIdentityScreen = () => {
       >
         <Text style={styles.exitResetText}>Exit Reset</Text>
       </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -263,11 +283,13 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingLeft: 24,
   },
+  codeInputWrapper: {
+    marginBottom: 32,
+  },
   codeInputContainer: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 32,
   },
   codeBox: {
     width: 40,
@@ -280,6 +302,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     marginHorizontal: 4,
   },
+  codeBoxFilled: {
+    borderColor: "#4CA64C",
+    backgroundColor: "#F0F8F0",
+  },
   dashContainer: {
     marginHorizontal: 8,
   },
@@ -290,9 +316,12 @@ const styles = StyleSheet.create({
   },
   hiddenInput: {
     position: "absolute",
-    width: 1,
-    height: 1,
-    opacity: 0,
+    top: 0,
+    left: 0,
+    width: 200,
+    height: 40,
+    opacity: 0.01,
+    zIndex: -1,
   },
   resendButton: {
     marginBottom: 24,

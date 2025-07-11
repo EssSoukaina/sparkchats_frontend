@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   TextInput,
   StatusBar,
-  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -21,72 +20,9 @@ const MarketingScreen = () => {
   const campaignTabs = ["All", "Sent", "Sending", "Failed"];
   const templateTabs = ["All", "Marketing", "Utility"];
 
-  const campaigns = [
-    {
-      id: 1,
-      name: "Spring Sale 2025",
-      status: "Sent",
-      sentDate: "Sent Messages: 2,458",
-      clickRate: "Click Rate: 12.4%",
-      openRate: "Open Rate: 45%",
-      color: "#E8F5E8",
-    },
-    {
-      id: 2,
-      name: "Summer Launch Teaser",
-      status: "Active",
-      sentDate: "Sent Messages: 890",
-      clickRate: "Click Rate: 8.2%",
-      openRate: "Open Rate: 32%",
-      color: "#E3F2FD",
-    },
-    {
-      id: 3,
-      name: "New Year Promo Blast",
-      status: "Completed",
-      sentDate: "Sent Messages: 3,156",
-      clickRate: "Click Rate: 15.7%",
-      openRate: "Open Rate: 52%",
-      color: "#F3E5F5",
-    },
-    {
-      id: 4,
-      name: "Flash Sale Reminder",
-      status: "Scheduled",
-      sentDate: "Scheduled: 1,890",
-      clickRate: "Click Rate: -",
-      openRate: "Open Rate: -",
-      color: "#FFF3E0",
-    },
-  ];
-
-  const templates = [
-    {
-      id: 1,
-      title: "Limited Time Offer",
-      description:
-        "Check out our latest offer! Enjoy a 20% discount on all products for a limited time. Don't miss out - shop now! 🛒",
-      type: "Marketing",
-    },
-  ];
-
   const renderMainView = () => (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Image
-            source={require("../../assets/images/logo.png")}
-            style={styles.headerLogo}
-            resizeMode="contain"
-          />
-        </View>
-        <View style={styles.proBadge}>
-          <Text style={styles.proText}>Pro</Text>
-        </View>
-      </View>
 
       {/* Title Section */}
       <View style={styles.titleSection}>
@@ -177,20 +113,6 @@ const MarketingScreen = () => {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Image
-            source={require("../../assets/images/logo.png")}
-            style={styles.headerLogo}
-            resizeMode="contain"
-          />
-        </View>
-        <View style={styles.proBadge}>
-          <Text style={styles.proText}>Pro</Text>
-        </View>
-      </View>
-
       {/* Title Section */}
       <View style={styles.titleSection}>
         <Text style={styles.pageTitle}>Manage Your Marketing Campaigns</Text>
@@ -236,7 +158,7 @@ const MarketingScreen = () => {
           />
           <TextInput
             style={styles.searchInput}
-            placeholder="Quickly find a campaign by name or status"
+            placeholder="Quickly find a template by name or type"
             value={searchText}
             onChangeText={setSearchText}
             placeholderTextColor="#999"
@@ -263,18 +185,12 @@ const MarketingScreen = () => {
           ))}
         </View>
 
-        {/* Template Card */}
-        <View style={styles.templateCard}>
-          <View style={styles.templateHeader}>
-            <Text style={styles.templateTitle}>Limited Time Offer</Text>
-            <View style={styles.templateToggle}>
-              <View style={styles.toggleSwitch} />
-            </View>
+        {/* Empty State */}
+        <View style={styles.emptyState}>
+          <View style={styles.emptyIcon}>
+            <Ionicons name="document-text" size={60} color="#ccc" />
           </View>
-          <Text style={styles.templateDescription}>
-            "Check out our latest offer! Enjoy a 20% discount on all products
-            for a limited time. Don't miss out - shop now! 🛒"
-          </Text>
+          <Text style={styles.emptyTitle}>No templates available</Text>
         </View>
       </View>
 
@@ -289,18 +205,13 @@ const MarketingScreen = () => {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Image
-            source={require("../../assets/images/logo.png")}
-            style={styles.headerLogo}
-            resizeMode="contain"
-          />
-        </View>
-        <View style={styles.proBadge}>
-          <Text style={styles.proText}>Pro</Text>
-        </View>
+      {/* Title Section */}
+      <View style={styles.titleSection}>
+        <Text style={styles.pageTitle}>Marketing Campaigns</Text>
+        <Text style={styles.pageSubtitle}>
+          Create, track, and optimize your WhatsApp marketing campaigns
+          effortlessly.
+        </Text>
       </View>
 
       {/* Action Buttons */}
@@ -359,42 +270,13 @@ const MarketingScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Campaign Cards */}
-        {campaigns.map((campaign) => (
-          <View
-            key={campaign.id}
-            style={[styles.campaignCard, { backgroundColor: campaign.color }]}
-          >
-            <View style={styles.campaignCardHeader}>
-              <Text style={styles.campaignName}>{campaign.name}</Text>
-              <View style={styles.campaignActions}>
-                <TouchableOpacity style={styles.campaignAction}>
-                  <Text style={styles.campaignActionText}>Edit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.campaignAction}>
-                  <Ionicons name="trash" size={16} color="#E91E63" />
-                  <Text
-                    style={[styles.campaignActionText, { color: "#E91E63" }]}
-                  >
-                    Delete
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.campaignAction}>
-                  <Text
-                    style={[styles.campaignActionText, { color: "#2196F3" }]}
-                  >
-                    View Details
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={styles.campaignStats}>
-              <Text style={styles.campaignStat}>{campaign.sentDate}</Text>
-              <Text style={styles.campaignStat}>{campaign.clickRate}</Text>
-              <Text style={styles.campaignStat}>{campaign.openRate}</Text>
-            </View>
+        {/* Empty State */}
+        <View style={styles.emptyState}>
+          <View style={styles.emptyIcon}>
+            <Ionicons name="megaphone" size={60} color="#ccc" />
           </View>
-        ))}
+          <Text style={styles.emptyTitle}>No campaigns available</Text>
+        </View>
       </View>
 
       {/* FAB */}
@@ -418,36 +300,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f5f5f5",
   },
-  header: {
-    backgroundColor: "#fff",
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    paddingBottom: 15,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  headerLogo: {
-    height: 40,
-    width: 150,
-  },
-  proBadge: {
-    backgroundColor: "#4CA64C",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-  },
-  proText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "600",
-  },
   titleSection: {
     backgroundColor: "#fff",
     paddingHorizontal: 20,
+    paddingTop: 60,
     paddingBottom: 20,
     alignItems: "center",
   },
@@ -565,48 +421,6 @@ const styles = StyleSheet.create({
     color: "#999",
     fontWeight: "500",
   },
-  templateCard: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  templateHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  templateTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  templateToggle: {
-    width: 40,
-    height: 24,
-    backgroundColor: "#ddd",
-    borderRadius: 12,
-    justifyContent: "center",
-    paddingHorizontal: 2,
-  },
-  toggleSwitch: {
-    width: 20,
-    height: 20,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    alignSelf: "flex-end",
-  },
-  templateDescription: {
-    fontSize: 14,
-    color: "#666",
-    lineHeight: 20,
-  },
   campaignTabs: {
     flexDirection: "row",
     marginBottom: 20,
@@ -622,44 +436,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#666",
     fontWeight: "500",
-  },
-  campaignCard: {
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-  },
-  campaignCardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 10,
-  },
-  campaignName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-    flex: 1,
-  },
-  campaignActions: {
-    flexDirection: "row",
-    gap: 15,
-  },
-  campaignAction: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  campaignActionText: {
-    fontSize: 12,
-    color: "#666",
-  },
-  campaignStats: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  campaignStat: {
-    fontSize: 12,
-    color: "#666",
   },
   fab: {
     position: "absolute",

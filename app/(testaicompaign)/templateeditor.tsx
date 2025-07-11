@@ -9,9 +9,14 @@ import {
   ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { TextInput } from "react-native";
 
 export default function TemplatePreviewScreen() {
   const router = useRouter();
+
+  const [message, setMessage] = React.useState(
+    "Check out our latest offer! Enjoy a 20% discount on all products for a limited time. Don't miss out—shop now! 🛍"
+  );
 
   const handleNextPress = () => {
     router.push("/(tabs)/home");
@@ -94,11 +99,13 @@ export default function TemplatePreviewScreen() {
           </View>
 
           <View style={styles.textInputContainer}>
-            <Text style={styles.messageText}>
-              "Check out our latest offer! Enjoy a 20% discount on{"\n"}
-              all products for a limited time. Don't miss out—shop{"\n"}
-              now! 🛍"
-            </Text>
+            <TextInput
+              value={message}
+              onChangeText={setMessage}
+              multiline
+              placeholder="Write your campaign message here..."
+              style={styles.textInput}
+            />
           </View>
         </View>
 
@@ -234,6 +241,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 20,
     elevation: 10,
+  },
+  textInput: {
+    fontSize: 16,
+    color: "#333",
+    lineHeight: 24,
+    minHeight: 120,
+    textAlignVertical: "top", // Ensures text starts from the top
   },
   whatsappHeader: {
     flexDirection: "row",

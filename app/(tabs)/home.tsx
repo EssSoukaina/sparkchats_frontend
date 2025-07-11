@@ -9,81 +9,24 @@ import {
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const HomeScreen = () => {
-  const quickActions = [
-    {
-      id: 1,
-      title: "Send a Marketing Campaign",
-      icon: "mail" as const,
-      color: "#E3F2FD",
-      iconColor: "#2196F3",
-    },
-    {
-      id: 2,
-      title: "Create a Quick Reply Template",
-      icon: "chatbox" as const,
-      color: "#FFF3E0",
-      iconColor: "#FF9800",
-    },
-    {
-      id: 3,
-      title: "Add Contacts",
-      icon: "person-add" as const,
-      color: "#E8F5E8",
-      iconColor: "#4CAF50",
-    },
-    {
-      id: 4,
-      title: "Check New Chats",
-      icon: "chatbubbles" as const,
-      color: "#FCE4EC",
-      iconColor: "#E91E63",
-    },
-  ];
-
-  const tips = [
-    {
-      id: 1,
-      title: "Make Your Messages More Engaging!",
-      subtitle:
-        "Add media, emojis and interactive elements to boost engagement rates.",
-      gradient: ["#4CAF50", "#45A049"],
-    },
-    {
-      id: 2,
-      title: "Save Time with Smart Replies",
-      subtitle:
-        "Set up automated responses to handle common customer inquiries efficiently.",
-      gradient: ["#2196F3", "#1976D2"],
-    },
-  ];
+  const router = useRouter();
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Image
-            source={require("../../assets/images/logo.png")}
-            style={styles.headerLogo}
-            resizeMode="contain"
-          />
-        </View>
-        <View style={styles.proBadge}>
-          <Text style={styles.proText}>Pro</Text>
-        </View>
-      </View>
-
       {/* Main Content */}
       <View style={styles.mainContent}>
         {/* WhatsApp Business Logo */}
         <View style={styles.whatsappLogoContainer}>
-          <View style={styles.whatsappBubble}>
-            <Text style={styles.whatsappLogoText}>B</Text>
-          </View>
+          <Image
+            source={require("../../assets/images/whatsapp-logo.png")}
+            style={styles.whatsappImage}
+            resizeMode="contain"
+          />
         </View>
 
         {/* Welcome Text */}
@@ -92,7 +35,10 @@ const HomeScreen = () => {
         </Text>
 
         {/* Facebook Button */}
-        <TouchableOpacity style={styles.facebookButton}>
+        <TouchableOpacity
+          style={styles.facebookButton}
+          onPress={() => router.push("/")}
+        >
           <Ionicons
             name="logo-facebook"
             size={20}
@@ -164,7 +110,10 @@ const HomeScreen = () => {
       <View style={styles.quickActionsSection}>
         <Text style={styles.sectionTitle}>Quick Actions:</Text>
         <View style={styles.actionsGrid}>
-          <TouchableOpacity style={[styles.actionCard, styles.actionCardBlue]}>
+          <TouchableOpacity
+            style={[styles.actionCard, styles.actionCardBlue]}
+            onPress={() => router.push("/marketing")}
+          >
             <View style={styles.actionIcon}>
               <Ionicons name="megaphone" size={28} color="#2196F3" />
             </View>
@@ -173,6 +122,7 @@ const HomeScreen = () => {
 
           <TouchableOpacity
             style={[styles.actionCard, styles.actionCardOrange]}
+            onPress={() => router.push("/marketing")}
           >
             <View style={styles.actionIcon}>
               <Ionicons name="copy" size={28} color="#FF9800" />
@@ -182,14 +132,20 @@ const HomeScreen = () => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.actionCard, styles.actionCardGreen]}>
+          <TouchableOpacity
+            style={[styles.actionCard, styles.actionCardGreen]}
+            onPress={() => router.push("/contacts")}
+          >
             <View style={styles.actionIcon}>
               <Ionicons name="person-add" size={28} color="#4CAF50" />
             </View>
             <Text style={styles.actionTitle}>Add Contacts</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.actionCard, styles.actionCardPink]}>
+          <TouchableOpacity
+            style={[styles.actionCard, styles.actionCardPink]}
+            onPress={() => router.push("/chats")}
+          >
             <View style={styles.actionIcon}>
               <Ionicons name="chatbubble-ellipses" size={28} color="#E91E63" />
             </View>
@@ -209,33 +165,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f5f5f5",
   },
-  header: {
-    backgroundColor: "#fff",
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    paddingBottom: 15,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  headerLogo: {
-    height: 40,
-    width: 150,
-  },
-  proBadge: {
-    backgroundColor: "#4CA64C",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-  },
-  proText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "600",
-  },
   mainContent: {
     backgroundColor: "#fff",
     paddingHorizontal: 30,
@@ -243,22 +172,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   whatsappLogoContainer: {
-    marginBottom: 30,
-  },
-  whatsappBubble: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "transparent",
-    borderWidth: 4,
-    borderColor: "#4CA64C",
-    justifyContent: "center",
+    marginBottom: 40,
     alignItems: "center",
+    justifyContent: "center",
+    overflow: "visible",
   },
-  whatsappLogoText: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: "#4CA64C",
+  whatsappImage: {
+    width: 120,
+    height: 120,
   },
   welcomeText: {
     fontSize: 16,

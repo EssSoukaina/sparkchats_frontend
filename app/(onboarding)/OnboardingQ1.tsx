@@ -12,70 +12,56 @@ import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useUser, useClerk } from "@clerk/clerk-expo";
 
-type MainGoalId =
-  | "increase_engagement"
-  | "referral"
-  | "grow_business"
-  | "improve_relationships";
+type BusinessGoalId = "marketing" | "customer_support" | "sales";
 
-const OnboardingQ3 = () => {
+const OnboardingQ1 = () => {
   const router = useRouter();
   const { user } = useUser();
   const { signOut } = useClerk();
-  const [selectedOption, setSelectedOption] = useState<MainGoalId | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<BusinessGoalId[]>([]);
 
-  const mainGoalOptions: Array<{
-    id: MainGoalId;
+  const businessGoals: Array<{
+    id: BusinessGoalId;
     title: string;
+    description: string;
   }> = [
     {
-      id: "increase_engagement",
-      title: "Increase engagement & responses",
+      id: "marketing",
+      title: "Marketing",
+      description:
+        "Automate campaigns, send bulk messages, and engage your audience.",
     },
     {
-      id: "referral",
-      title: "Referral (Friend/Colleague)",
+      id: "customer_support",
+      title: "Customer Support",
+      description:
+        "Provide instant responses, manage chats, and improve service.",
     },
     {
-      id: "grow_business",
-      title: "Grow my business faster",
-    },
-    {
-      id: "improve_relationships",
-      title: "Improve customer relationships",
+      id: "sales",
+      title: "Sales",
+      description:
+        "Convert leads, follow up automatically, and close deals faster.",
     },
   ];
 
-  const selectOption = (optionId: MainGoalId) => {
-    setSelectedOption(optionId);
+  const toggleOption = (optionId: BusinessGoalId) => {
+    setSelectedOptions((prev) => {
+      if (prev.includes(optionId)) {
+        return prev.filter((id) => id !== optionId);
+      } else {
+        return [...prev, optionId];
+      }
+    });
   };
 
-  const handleFinish = async () => {
-    console.log("Selected main goal:", selectedOption);
+  const handleNext = () => {
+    console.log("Selected options:", selectedOptions);
+    router.push("/OnboardingQ2");
+  };
 
-    // Save onboarding completion status to user metadata
-    try {
-      await user?.update({
-        unsafeMetadata: {
-          ...user.unsafeMetadata,
-          onboardingCompleted: true,
-          selectedGoal: selectedOption,
-        },
-      });
-
-      // Navigate to main app or dashboard
-      router.replace("/(auth)/AccountCreated");
-      setTimeout(() => {
-        router.replace("/(auth)/BusinessProfileSetup");
-      }, 5000);
-    } catch (error) {
-      console.error("Error updating user metadata:", error);
-      // Still navigate even if metadata update fails
-      router.replace("/(auth)/AccountCreated");
-      setTimeout(() => {
-        router.replace("/(auth)/BusinessProfileSetup");
-      }, 5000);
-    }
+  const handleSkip = () => {
+    router.push("/OnboardingQ2");
   };
 
   const handleBack = () => {
@@ -95,11 +81,6 @@ const OnboardingQ3 = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <MaterialIcons name="logout" size={20} color="#666" />
-      </TouchableOpacity>
-
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -112,61 +93,93 @@ const OnboardingQ3 = () => {
           <Text style={styles.headerTitle}>Set Up Your Business Goals</Text>
         </View>
 
-        {/* Progress Indicator - All steps completed */}
+        {/* Progress Indicator - Only first step completed */}
         <View style={styles.progressContainer}>
           <View style={styles.progressTrack}>
             <View style={[styles.progressStep, styles.activeStep]}>
               <MaterialIcons name="check" size={12} color="white" />
             </View>
-            <View style={styles.progressLine} />
-            <View style={[styles.progressStep, styles.activeStep]}>
-              <MaterialIcons name="check" size={12} color="white" />
-            </View>
-            <View style={styles.progressLine} />
-            <View style={[styles.progressStep, styles.activeStep]}>
-              <MaterialIcons name="check" size={12} color="white" />
-            </View>
+            <View style={styles.progressLineInactive} />
+            <View style={[styles.progressStep, styles.inactiveStep]} />
+            <View style={styles.progressLineInactive} />
+            <View style={[styles.progressStep, styles.inactiveStep]} />
           </View>
         </View>
 
         {/* Question */}
         <View style={styles.questionContainer}>
           <Text style={styles.questionTitle}>
-            What is your main goal with SparkChats?
+            How do you plan to use SparkChats?
           </Text>
-          <Text style={styles.questionSubtitle}>(Choose one)</Text>
+          <Text style={styles.questionSubtitle}>
+            (Select one or multiple options)
+          </Text>
         </View>
 
-        {/* Options */}
+        {/* Options - Fixed layout to match design */}
         <View style={styles.optionsContainer}>
-          {mainGoalOptions.map((option) => (
+          {/* First row with Marketing and Customer Support */}
+          <View style={styles.optionsRow}>
+            {businessGoals.slice(0, 2).map((goal) => (
+              <TouchableOpacity
+                key={goal.id}
+                style={[
+                  styles.optionCard,
+                  selectedOptions.includes(goal.id) && styles.selectedOption,
+                ]}
+                onPress={() => toggleOption(goal.id)}
+              >
+                <View
+                  style={[
+                    styles.radioButton,
+                    selectedOptions.includes(goal.id) &&
+                      styles.radioButtonSelected,
+                  ]}
+                >
+                  {selectedOptions.includes(goal.id) && (
+                    <View style={styles.radioButtonInner} />
+                  )}
+                </View>
+                <Text style={styles.optionTitle}>{goal.title}</Text>
+                <Text style={styles.optionDescription}>{goal.description}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Second row with Sales centered */}
+          <View style={styles.optionsRow}>
             <TouchableOpacity
-              key={option.id}
+              key={businessGoals[2].id}
               style={[
                 styles.optionCard,
-                selectedOption === option.id && styles.selectedOption,
+                selectedOptions.includes(businessGoals[2].id) &&
+                  styles.selectedOption,
               ]}
-              onPress={() => selectOption(option.id)}
+              onPress={() => toggleOption(businessGoals[2].id)}
             >
               <View
                 style={[
                   styles.radioButton,
-                  selectedOption === option.id && styles.radioButtonSelected,
+                  selectedOptions.includes(businessGoals[2].id) &&
+                    styles.radioButtonSelected,
                 ]}
               >
-                {selectedOption === option.id && (
+                {selectedOptions.includes(businessGoals[2].id) && (
                   <View style={styles.radioButtonInner} />
                 )}
               </View>
-              <View style={styles.optionContent}>
-                <Text style={styles.optionTitle}>{option.title}</Text>
-              </View>
+              <Text style={styles.optionTitle}>{businessGoals[2].title}</Text>
+              <Text style={styles.optionDescription}>
+                {businessGoals[2].description}
+              </Text>
             </TouchableOpacity>
-          ))}
+            {/* Empty view to center the Sales option */}
+            <View style={styles.optionCard} />
+          </View>
         </View>
       </ScrollView>
 
-      {/* Bottom Navigation - Only Back and Finish buttons */}
+      {/* Bottom Navigation - Fixed styling */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity style={styles.backNavButton} onPress={handleBack}>
           <MaterialIcons name="arrow-back" size={20} color="white" />
@@ -175,16 +188,21 @@ const OnboardingQ3 = () => {
 
         <TouchableOpacity
           style={[
-            styles.finishButton,
-            selectedOption === null && styles.disabledButton,
+            styles.nextButton,
+            selectedOptions.length === 0 && styles.disabledButton,
           ]}
-          onPress={handleFinish}
-          disabled={selectedOption === null}
+          onPress={handleNext}
+          disabled={selectedOptions.length === 0}
         >
-          <Text style={styles.finishButtonText}>Finish</Text>
+          <Text style={styles.nextButtonText}>Next</Text>
           <MaterialIcons name="arrow-forward" size={20} color="white" />
         </TouchableOpacity>
       </View>
+
+      {/* Skip Button */}
+      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+        <Text style={styles.skipButtonText}>Skip & Finish</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -273,15 +291,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 40,
   },
-  optionCard: {
+  // New styles for 2x2 grid layout
+  optionsRow: {
     flexDirection: "row",
-    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+    gap: 12,
+  },
+  optionCard: {
+    flex: 1,
     backgroundColor: "#F8F9FA",
     borderRadius: 12,
     padding: 16,
-    marginBottom: 12,
     borderWidth: 2,
     borderColor: "transparent",
+    alignItems: "center",
+    minHeight: 140,
+    justifyContent: "flex-start",
   },
   selectedOption: {
     borderColor: "#4CA64C",
@@ -293,7 +319,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: "#CCCCCC",
-    marginRight: 16,
+    marginBottom: 12,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -306,20 +332,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#4CA64C",
   },
-  optionContent: {
-    flex: 1,
-  },
   optionTitle: {
     fontSize: 16,
     fontWeight: "600",
     color: "#333333",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  optionDescription: {
+    fontSize: 12,
+    color: "#666666",
+    lineHeight: 16,
+    textAlign: "center",
   },
   bottomContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 30,
     gap: 12,
   },
   backNavButton: {
@@ -337,7 +367,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  finishButton: {
+  nextButton: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
@@ -350,11 +380,28 @@ const styles = StyleSheet.create({
   disabledButton: {
     opacity: 0.5,
   },
-  finishButtonText: {
+  nextButtonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "600",
   },
+  skipButton: {
+    alignSelf: "center",
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#4CA64C",
+    borderRadius: 8,
+    marginHorizontal: 20,
+    marginTop: 12,
+  },
+  skipButtonText: {
+    color: "#4CA64C",
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+  },
 });
 
-export default OnboardingQ3;
+export default OnboardingQ1;

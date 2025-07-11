@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   Alert,
+  ScrollView,
 } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import Spinner from "react-native-loading-spinner-overlay";
@@ -85,7 +86,12 @@ const Register = () => {
       <Stack.Screen options={{ headerShown: false }} />
       <Spinner visible={loading} />
 
-      <View style={styles.contentContainer}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <Image
           source={require("../../assets/images/logo.png")}
           style={styles.logo}
@@ -196,7 +202,7 @@ const Register = () => {
             <Text style={styles.loginLink}>Log in here</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -205,12 +211,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+  },
+  scrollView: {
+    flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 40,
   },
   contentContainer: {
     flexGrow: 1,
     justifyContent: "center",
+    paddingTop: 40,
+    paddingBottom: 20,
   },
   logo: {
     width: 200,

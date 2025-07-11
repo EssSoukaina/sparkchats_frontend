@@ -39,7 +39,7 @@ export default function LaunchAIcomp() {
         {/* Icon Container */}
         <View style={styles.iconContainer}>
           <Image
-            source={require("../../../assets/images/campaign-icon.png")}
+            source={require("../../assets/images/campaign-icon.png")}
             style={styles.icon}
             resizeMode="contain"
           />

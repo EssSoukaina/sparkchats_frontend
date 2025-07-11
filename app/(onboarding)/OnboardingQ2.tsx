@@ -86,11 +86,6 @@ const OnboardingUserAwareness = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <MaterialIcons name="logout" size={20} color="#666" />
-      </TouchableOpacity>
-
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
