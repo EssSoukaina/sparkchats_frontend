@@ -9,8 +9,10 @@ import {
   StatusBar,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const MarketingScreen = () => {
+  const router = useRouter();
   const [currentView, setCurrentView] = useState<
     "main" | "templates" | "campaigns"
   >("main");
@@ -19,6 +21,14 @@ const MarketingScreen = () => {
 
   const campaignTabs = ["All", "Sent", "Sending", "Failed"];
   const templateTabs = ["All", "Marketing", "Utility"];
+
+  const navigateToCreateCampaign = () => {
+    if (currentView === "campaigns") {
+      router.push("/TemplateSelection"); // Update to your actual Select Template route
+    } else {
+      router.push("/(testaicompaign)/AICampaignCreator");
+    }
+  };
 
   const renderMainView = () => (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -103,7 +113,7 @@ const MarketingScreen = () => {
       </View>
 
       {/* FAB */}
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={styles.fab} onPress={navigateToCreateCampaign}>
         <Ionicons name="add" size={24} color="#fff" />
       </TouchableOpacity>
     </ScrollView>
@@ -195,7 +205,7 @@ const MarketingScreen = () => {
       </View>
 
       {/* FAB */}
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={styles.fab} onPress={navigateToCreateCampaign}>
         <Ionicons name="add" size={24} color="#fff" />
       </TouchableOpacity>
     </ScrollView>
@@ -216,7 +226,10 @@ const MarketingScreen = () => {
 
       {/* Action Buttons */}
       <View style={styles.actionButtons}>
-        <TouchableOpacity style={[styles.actionButton, styles.campaignButton]}>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.campaignButton]}
+          onPress={navigateToCreateCampaign}
+        >
           <Ionicons name="megaphone" size={24} color="#2196F3" />
           <Text style={styles.actionButtonText}>Campaign</Text>
         </TouchableOpacity>
@@ -280,7 +293,7 @@ const MarketingScreen = () => {
       </View>
 
       {/* FAB */}
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={styles.fab} onPress={navigateToCreateCampaign}>
         <Ionicons name="add" size={24} color="#fff" />
       </TouchableOpacity>
     </ScrollView>

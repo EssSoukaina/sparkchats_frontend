@@ -1,317 +1,370 @@
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   View,
   Text,
+  TextInput,
   TouchableOpacity,
-  StyleSheet,
+  ScrollView,
   SafeAreaView,
   StatusBar,
-  ScrollView,
-  Dimensions,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet } from "react-native";
 
-const { width } = Dimensions.get("window");
+// Colors from your shared styles
+const Colors = {
+  primary: "#4CA64C",
+  secondary: "#008001",
+  background: "#FBFBFB",
+  backgroundSecondary: "#E0EEE5",
+  backgroundAccent: "#E6F2E5",
+  pageBackground: "#F5F5F5",
+  textPrimary: "#333333",
+  textSecondary: "#555555",
+  textTertiary: "#777777",
+  textDark: "#024736",
+  border: "#AAAAAA",
+  backgroundElements: "#DDDDDD",
+  white: "#FFFFFF",
+  transparent: "transparent",
+};
 
-export default function TemplateSelection() {
-  const router = useRouter();
-  const [currentTemplate, setCurrentTemplate] = useState(0);
-
-  const templates = [
-    {
-      id: 1,
-      name: "SPM Template",
-      description:
-        "A direct and clear text message, perfect for quick communication.",
-      type: "SPM",
-      chatTitle: "Athletics",
-      avatarLetter: "A",
-      messageText:
-        "Hi Tony! Our latest offer is starting now! Buy two, get one free on our new equipment collection.",
-    },
-    {
-      id: 2,
-      name: "Delishop Promo",
-      description: "A delicious message layout for food & beverage deals.",
-      type: "FOOD",
-      chatTitle: "Delishop",
-      avatarLetter: "D",
-      messageText:
-        "Craving chocolate? 🍫 Buy 1 get 1 free this weekend only! Tap to order.",
-    },
-    {
-      id: 3,
-      name: "Event Reminder",
-      description:
-        "Send a stylish reminder for upcoming events and appointments.",
-      type: "EVENT",
-      chatTitle: "Events Co",
-      avatarLetter: "E",
-      messageText:
-        "Don't forget: Your reservation starts in 1 hour! 📅 Reply YES to confirm attendance.",
-    },
-  ];
+const TemplateSelectionScreen = () => {
+  const [searchText, setSearchText] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
 
   const handleGoBack = () => {
     router.back();
   };
 
   const handleNext = () => {
+    const current = templates.find((t) => t.id === selectedTemplate);
+    if (!current) return; // Prevent navigation if no template selected
+
     router.push({
-      pathname: "/templatepreview",
+      pathname: "/ContactSelection",
       params: { selectedTemplate: JSON.stringify(current) },
     });
   };
 
-  const handlePrevious = () => {
-    if (currentTemplate > 0) {
-      setCurrentTemplate(currentTemplate - 1);
-    }
-  };
+  const templates = [
+    {
+      id: 1,
+      title: "Winter Collection Launch",
+      description:
+        "Introducing our latest winter collection with premium quality materials and trendy designs.",
+      category: "fashion",
+      date: "Mar 15, 2025",
+    },
+    {
+      id: 2,
+      title: "Spring Sale Campaign",
+      description:
+        "Limited time offer on selected items with up to 50% discount on premium products.",
+      category: "promotion",
+      date: "Mar 12, 2025",
+    },
+    {
+      id: 3,
+      title: "Product Announcement",
+      description:
+        "Exciting news about our upcoming product launch with innovative features.",
+      category: "announcement",
+      date: "Mar 10, 2025",
+    },
+  ];
 
-  const handleNextTemplate = () => {
-    if (currentTemplate < templates.length - 1) {
-      setCurrentTemplate(currentTemplate + 1);
-    }
-  };
-
-  const current = templates[currentTemplate];
+  const filteredTemplates = templates.filter(
+    (template) =>
+      template.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      template.description.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={styles.safeAreaContainer}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Colors.pageBackground}
+      />
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-          <AntDesign name="arrowleft" size={24} color="#333333" />
+        <Text style={styles.headerTitle}>select template</Text>
+        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+          <Text style={styles.nextButtonText}>next</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>AI-Powered Campaign Creator</Text>
-        <View style={styles.proButton}>
-          <Text style={styles.proButtonText}>Pro</Text>
-        </View>
       </View>
 
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Title and Description */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.mainTitle}>Choose Your Message Template</Text>
-          <Text style={styles.subtitle}>
-            Select the best format for your WhatsApp campaign.
-          </Text>
-        </View>
-
-        {/* Template Carousel */}
-        <View style={styles.carouselContainer}>
-          {/* Navigation Arrows */}
-          <TouchableOpacity
-            style={[styles.navButton, styles.leftNav]}
-            onPress={handlePrevious}
-            disabled={currentTemplate === 0}
-          >
-            <AntDesign name="left" size={20} color="#666666" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.navButton, styles.rightNav]}
-            onPress={handleNextTemplate}
-            disabled={currentTemplate === templates.length - 1}
-          >
-            <AntDesign name="right" size={20} color="#666666" />
-          </TouchableOpacity>
-
-          {/* Template Card */}
-          <View style={styles.templateCard}>
-            <View style={styles.templateHeader}>
-              <Text style={styles.templateName}>{current.name}</Text>
-              <View style={styles.moreButton}>
-                <AntDesign name="ellipsis1" size={20} color="#333333" />
-              </View>
-            </View>
-
-            <Text style={styles.templateDescription}>
-              {current.description}
-            </Text>
-
-            {/* Phone Mockup */}
-            <View style={styles.phoneMockup}>
-              <View style={styles.phoneScreen}>
-                <View style={styles.chatHeader}>
-                  <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>A</Text>
-                  </View>
-                  <Text style={styles.chatTitle}>Athletics</Text>
-                </View>
-
-                <View style={styles.messageContainer}>
-                  <View style={styles.messageImage}>
-                    <View style={styles.imagePlaceholder} />
-                  </View>
-                  <Text style={styles.messageText}>
-                    Hi! Tony! Our latest offer is starting now! Buy two, get one
-                    free on our new equipment collection.
-                  </Text>
-                </View>
-              </View>
+        <View style={styles.contentContainer}>
+          {/* Search Input */}
+          <View style={styles.searchContainer}>
+            <View style={styles.searchInputWrapper}>
+              <Ionicons
+                name="search"
+                size={20}
+                color={Colors.textTertiary}
+                style={styles.searchIcon}
+              />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search template"
+                placeholderTextColor={Colors.textTertiary}
+                value={searchText}
+                onChangeText={setSearchText}
+              />
             </View>
           </View>
-        </View>
 
-        {/* Continue Button */}
-        <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
-          <Text style={styles.continueButtonText}>
-            Continue with this template
-          </Text>
-        </TouchableOpacity>
+          {/* Create New Template Button */}
+          <TouchableOpacity style={styles.createNewButton}>
+            <Ionicons name="add" size={24} color={Colors.primary} />
+            <View style={styles.createNewContent}>
+              <Text style={styles.createNewTitle}>create new template</Text>
+              <Text style={styles.createNewSubtitle}>
+                start with new template for your campaign
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Templates List */}
+          {filteredTemplates.map((template) => (
+            <TouchableOpacity
+              key={template.id}
+              style={[
+                styles.templateCard,
+                selectedTemplate === template.id && styles.templateCardSelected,
+              ]}
+              onPress={() => setSelectedTemplate(template.id)}
+            >
+              <View style={styles.templateHeader}>
+                <View style={styles.categoryTag}>
+                  <Text style={styles.categoryText}>{template.category}</Text>
+                </View>
+                <View style={styles.templateMeta}>
+                  <Text style={styles.templateDate}>{template.date}</Text>
+                  <View
+                    style={[
+                      styles.radioButton,
+                      selectedTemplate === template.id &&
+                        styles.radioButtonSelected,
+                    ]}
+                  >
+                    {selectedTemplate === template.id && (
+                      <View style={styles.radioButtonInner} />
+                    )}
+                  </View>
+                </View>
+              </View>
+
+              <Text style={styles.templateTitle}>{template.title}</Text>
+              <Text style={styles.templateDescription}>
+                {template.description}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFFFFF" },
+  safeAreaContainer: {
+    flex: 1,
+    backgroundColor: Colors.pageBackground,
+  },
+
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+
+  contentContainer: {
+    padding: 20,
+  },
+
   header: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.backgroundElements,
   },
-  backButton: { padding: 4 },
+
   headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333333",
-    flex: 1,
-    textAlign: "center",
-    marginLeft: -40,
-  },
-  proButton: {
-    backgroundColor: "#4CAF50",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  proButtonText: { color: "#FFFFFF", fontSize: 12, fontWeight: "600" },
-  scrollContainer: { flex: 1, paddingHorizontal: 20 },
-  titleContainer: { marginBottom: 40, paddingTop: 20 },
-  mainTitle: {
     fontSize: 24,
-    fontWeight: "700",
-    color: "#333333",
-    marginBottom: 12,
-    textAlign: "center",
+    fontWeight: "600",
+    color: Colors.textTertiary,
   },
-  subtitle: {
+
+  nextButton: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+
+  nextButtonText: {
+    color: Colors.white,
     fontSize: 16,
-    color: "#666666",
-    textAlign: "center",
-    lineHeight: 22,
+    fontWeight: "500",
   },
-  carouselContainer: { position: "relative", marginBottom: 40 },
-  navButton: {
-    position: "absolute",
-    top: "50%",
-    zIndex: 10,
-    backgroundColor: "#FFFFFF",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
+
+  // Search Styles
+  searchContainer: {
+    marginBottom: 32,
+  },
+
+  searchInputWrapper: {
+    flexDirection: "row",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: Colors.white,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    paddingHorizontal: 16,
   },
-  leftNav: { left: -10, marginTop: -20 },
-  rightNav: { right: -10, marginTop: -20 },
-  templateCard: {
-    backgroundColor: "#F8F8F8",
-    borderRadius: 16,
+
+  searchIcon: {
+    marginRight: 12,
+  },
+
+  searchInput: {
+    flex: 1,
+    paddingVertical: 16,
+    fontSize: 16,
+    color: Colors.textPrimary,
+  },
+
+  // Create New Template Styles
+  createNewButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Colors.backgroundAccent,
+    borderRadius: 12,
     padding: 24,
-    marginHorizontal: 20,
+    marginBottom: 32,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    borderStyle: "dashed",
   },
+
+  createNewContent: {
+    marginLeft: 16,
+    flex: 1,
+  },
+
+  createNewTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: Colors.primary,
+    marginBottom: 4,
+  },
+
+  createNewSubtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    lineHeight: 18,
+  },
+
+  // Template Card Styles
+  templateCard: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.backgroundElements,
+    shadowColor: Colors.textDark,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+
+  templateCardSelected: {
+    borderColor: Colors.primary,
+    borderWidth: 2,
+    backgroundColor: Colors.backgroundAccent,
+  },
+
   templateHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 12,
   },
-  templateName: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333333",
+
+  categoryTag: {
+    backgroundColor: Colors.backgroundSecondary,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
   },
-  moreButton: { padding: 4 },
-  templateDescription: {
-    fontSize: 14,
-    color: "#666666",
-    marginBottom: 24,
-    lineHeight: 20,
+
+  categoryText: {
+    fontSize: 12,
+    color: Colors.textDark,
+    fontWeight: "500",
   },
-  phoneMockup: { alignItems: "center" },
-  phoneScreen: {
-    width: 280,
-    height: 400,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  chatHeader: {
+
+  templateMeta: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
   },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#FF6B35",
-    justifyContent: "center",
-    alignItems: "center",
+
+  templateDate: {
+    fontSize: 14,
+    color: Colors.textTertiary,
     marginRight: 12,
   },
-  avatarText: { color: "#FFFFFF", fontSize: 14, fontWeight: "600" },
-  chatTitle: { fontSize: 16, fontWeight: "600", color: "#333333" },
-  messageContainer: {
-    backgroundColor: "#E3F2FD",
-    borderRadius: 12,
-    padding: 12,
-    marginLeft: 8,
-  },
-  messageImage: { marginBottom: 8 },
-  imagePlaceholder: {
-    width: "100%",
-    height: 120,
-    backgroundColor: "#E0E0E0",
-    borderRadius: 8,
-  },
-  messageText: { fontSize: 14, color: "#333333", lineHeight: 18 },
-  continueButton: {
-    backgroundColor: "#4CAF50",
-    paddingVertical: 18,
-    borderRadius: 12,
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  continueButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
+
+  templateTitle: {
+    fontSize: 18,
     fontWeight: "600",
+    color: Colors.textDark,
+    marginBottom: 8,
+  },
+
+  templateDescription: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    lineHeight: 20,
+  },
+
+  // Radio Button Styles
+  radioButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: Colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.white,
+  },
+
+  radioButtonSelected: {
+    borderColor: Colors.primary,
+  },
+
+  radioButtonInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: Colors.primary,
   },
 });
+
+export default TemplateSelectionScreen;

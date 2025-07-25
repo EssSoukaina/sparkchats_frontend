@@ -8,6 +8,8 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  Modal,
+  FlatList,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { AntDesign, Feather } from "@expo/vector-icons";
@@ -18,19 +20,75 @@ export default function AICampaignCreator() {
   const [messageText, setMessageText] = useState("");
   const [toneOfVoice, setToneOfVoice] = useState("");
   const [language, setLanguage] = useState("");
+  const [mediaFile, setMediaFile] = useState("");
+  type DropdownType = "category" | "tone" | "language";
+
+  // For dropdowns
+  const [showDropdown, setShowDropdown] = useState<
+    Record<DropdownType, boolean>
+  >({
+    category: false,
+    tone: false,
+    language: false,
+  });
+
+  const categoryOptions = ["Promotion", "Event", "Update", "Reminder"];
+  const toneOptions = ["Friendly", "Professional", "Urgent", "Casual"];
+  const languageOptions = ["English", "French", "Arabic", "Spanish"];
 
   const handleGoBack = () => {
     router.back();
   };
 
   const handleWriteMessage = () => {
-    router.push("/TemplateSelection");
+    // You could use values in API call here
+    router.push("/templatepreview");
   };
 
   const handleUploadMedia = () => {
-    // Handle media upload logic
-    console.log("Upload media pressed");
+    // Placeholder for media upload logic
+    setMediaFile("promo_image.jpg"); // simulate uploaded file name
   };
+
+  const renderDropdown = (type: DropdownType, options: string[]) => (
+    <Modal
+      transparent
+      visible={showDropdown[type]} // ✅ no error now
+      animationType="fade"
+      onRequestClose={() =>
+        setShowDropdown((prev) => ({ ...prev, [type]: false }))
+      }
+    >
+      <TouchableOpacity
+        style={styles.modalOverlay}
+        activeOpacity={1}
+        onPressOut={() =>
+          setShowDropdown((prev) => ({ ...prev, [type]: false }))
+        }
+      >
+        <View style={styles.dropdownModal}>
+          <FlatList
+            data={options}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.optionItem}
+                onPress={() => {
+                  if (type === "category") setMessageCategory(item);
+                  else if (type === "tone") setToneOfVoice(item);
+                  else if (type === "language") setLanguage(item);
+
+                  setShowDropdown((prev) => ({ ...prev, [type]: false }));
+                }}
+              >
+                <Text style={styles.optionText}>{item}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </TouchableOpacity>
+    </Modal>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,7 +106,6 @@ export default function AICampaignCreator() {
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Title and Description */}
         <View style={styles.titleContainer}>
           <Text style={styles.mainTitle}>Create Your AI-Powered Campaign</Text>
           <Text style={styles.subtitle}>
@@ -64,9 +121,14 @@ export default function AICampaignCreator() {
           {/* Message Category */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Message Category</Text>
-            <TouchableOpacity style={styles.dropdown}>
+            <TouchableOpacity
+              style={styles.dropdown}
+              onPress={() =>
+                setShowDropdown((prev) => ({ ...prev, category: true }))
+              }
+            >
               <Text style={styles.dropdownPlaceholder}>
-                Select the type of campaign
+                {messageCategory || "Select the type of campaign"}
               </Text>
               <AntDesign name="down" size={16} color="#999999" />
             </TouchableOpacity>
@@ -86,19 +148,33 @@ export default function AICampaignCreator() {
             />
           </View>
 
-          {/* Tone of Voice and Change Language */}
+          {/* Tone of Voice and Language */}
           <View style={styles.rowContainer}>
             <View style={styles.halfWidth}>
               <Text style={styles.label}>Tone of Voice</Text>
-              <TouchableOpacity style={styles.dropdown}>
-                <Text style={styles.dropdownPlaceholder}>Select Theme</Text>
+              <TouchableOpacity
+                style={styles.dropdown}
+                onPress={() =>
+                  setShowDropdown((prev) => ({ ...prev, tone: true }))
+                }
+              >
+                <Text style={styles.dropdownPlaceholder}>
+                  {toneOfVoice || "Select Tone"}
+                </Text>
                 <AntDesign name="down" size={16} color="#999999" />
               </TouchableOpacity>
             </View>
             <View style={styles.halfWidth}>
               <Text style={styles.label}>Change Language</Text>
-              <TouchableOpacity style={styles.dropdown}>
-                <Text style={styles.dropdownPlaceholder}>Language</Text>
+              <TouchableOpacity
+                style={styles.dropdown}
+                onPress={() =>
+                  setShowDropdown((prev) => ({ ...prev, language: true }))
+                }
+              >
+                <Text style={styles.dropdownPlaceholder}>
+                  {language || "Language"}
+                </Text>
                 <AntDesign name="down" size={16} color="#999999" />
               </TouchableOpacity>
             </View>
@@ -114,7 +190,9 @@ export default function AICampaignCreator() {
               <View style={styles.uploadIcon}>
                 <Feather name="upload-cloud" size={32} color="#CCCCCC" />
               </View>
-              <Text style={styles.uploadText}>Click here to upload</Text>
+              <Text style={styles.uploadText}>
+                {mediaFile ? mediaFile : "Click here to upload"}
+              </Text>
               <Text style={styles.uploadSubtext}>
                 Supported formats: JPEG, PNG, MP4
               </Text>
@@ -130,6 +208,11 @@ export default function AICampaignCreator() {
           <Text style={styles.primaryButtonText}>Write your message</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Dropdown Modals */}
+      {renderDropdown("category", categoryOptions)}
+      {renderDropdown("tone", toneOptions)}
+      {renderDropdown("language", languageOptions)}
     </SafeAreaView>
   );
 }
@@ -266,5 +349,28 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dropdownModal: {
+    width: "80%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    maxHeight: 250,
+  },
+  optionItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEE",
+  },
+  optionText: {
+    fontSize: 16,
+    color: "#333333",
   },
 });

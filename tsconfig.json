@@ -10,7 +10,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "paths": {
+    "paths": { 
       "@/*": ["./*"]
     },
     "skipLibCheck": true
