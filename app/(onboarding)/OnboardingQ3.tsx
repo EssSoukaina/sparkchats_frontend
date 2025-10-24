@@ -64,16 +64,16 @@ const OnboardingQ3 = () => {
       });
 
       // Navigate to main app or dashboard
-      router.replace("/(testaicompaign)/ImportContacts");
+      router.replace("/(testaicampaign)/ImportContacts");
       setTimeout(() => {
-        router.replace("/(testaicompaign)/ImportContacts");
+        router.replace("/(testaicampaign)/ImportContacts");
       }, 5000);
     } catch (error) {
       console.error("Error updating user metadata:", error);
       // Still navigate even if metadata update fails
       router.replace("/(auth)/AccountCreated");
       setTimeout(() => {
-        router.replace("/(testaicompaign)/LaunchAicomp");
+        router.replace("/(testaicampaign)/LaunchAicomp");
       }, 5000);
     }
   };

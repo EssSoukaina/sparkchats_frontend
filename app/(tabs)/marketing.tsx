@@ -24,9 +24,9 @@ const MarketingScreen = () => {
 
   const navigateToCreateCampaign = () => {
     if (currentView === "campaigns") {
-      router.push("/TemplateSelection"); // Update to your actual Select Template route
+      router.push("/(testaicampaign)/TemplateSelection");
     } else {
-      router.push("/(testaicompaign)/AICampaignCreator");
+      router.push("/(testaicampaign)/AICampaignCreator");
     }
   };
 
@@ -46,6 +46,7 @@ const MarketingScreen = () => {
       {/* Action Buttons */}
       <View style={styles.actionButtons}>
         <TouchableOpacity
+          testID="campaign-action"
           style={[styles.actionButton, styles.campaignButton]}
           onPress={() => setCurrentView("campaigns")}
         >
@@ -54,6 +55,7 @@ const MarketingScreen = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
+          testID="template-action"
           style={[styles.actionButton, styles.templateButton]}
           onPress={() => setCurrentView("templates")}
         >
@@ -113,7 +115,11 @@ const MarketingScreen = () => {
       </View>
 
       {/* FAB */}
-      <TouchableOpacity style={styles.fab} onPress={navigateToCreateCampaign}>
+      <TouchableOpacity
+        testID="fab-button"
+        style={styles.fab}
+        onPress={navigateToCreateCampaign}
+      >
         <Ionicons name="add" size={24} color="#fff" />
       </TouchableOpacity>
     </ScrollView>
@@ -205,7 +211,11 @@ const MarketingScreen = () => {
       </View>
 
       {/* FAB */}
-      <TouchableOpacity style={styles.fab} onPress={navigateToCreateCampaign}>
+      <TouchableOpacity
+        testID="fab-button"
+        style={styles.fab}
+        onPress={navigateToCreateCampaign}
+      >
         <Ionicons name="add" size={24} color="#fff" />
       </TouchableOpacity>
     </ScrollView>
@@ -293,7 +303,11 @@ const MarketingScreen = () => {
       </View>
 
       {/* FAB */}
-      <TouchableOpacity style={styles.fab} onPress={navigateToCreateCampaign}>
+      <TouchableOpacity
+        testID="fab-button"
+        style={styles.fab}
+        onPress={navigateToCreateCampaign}
+      >
         <Ionicons name="add" size={24} color="#fff" />
       </TouchableOpacity>
     </ScrollView>
